@@ -1,6 +1,7 @@
 # tescalon@amazon.com
 # jschwenn@amazon.com
 # https://docs.aws.amazon.com/deepracer/latest/developerguide/deepracer-reward-function-input.html
+# https://github.com/aws-samples/aws-deepracer-workshops/blob/master/Workshops/2019-AWSSummits-AWSDeepRacerService/Lab1/Readme.md
 
 # all_wheels_on_track
 # x
@@ -42,9 +43,6 @@ def reward_function(params):
     x = params['x']
     print('y ' + str(params['y']))
     y = params['y']
-    global position_points
-    position_points.append([x, y])
-    print('position_points', position_points)
     print('distance_from_center ' + str(params['distance_from_center']))
     distance_from_center = params['distance_from_center']
     print('is_left_of_center ' + str(params['is_left_of_center']))
@@ -66,6 +64,10 @@ def reward_function(params):
     print('closest_waypoints ' + str(params['closest_waypoints']))
     closest_waypoints = params['closest_waypoints']
     print('=====END PARAMS')
+    global position_points
+    position_points.append([x, y, distance_from_center, progress])
+    print('position_points', position_points)
+    progressBonus = 10 * (progress - position_points[-10:][0][2])
 
     reward = 0
     bonus = 0
@@ -73,12 +75,14 @@ def reward_function(params):
     edgeMultiplier = 1
     if (distance_from_center / (track_width / 2)) > 0.75:
         edgeMultiplier = 0.5
-    elif (distance_from_center / (track_width / 2)) > 0.9:
+    elif not all_wheels_on_track:
         edgeMultiplier = 0.1
-    elif (distance_from_center / (track_width / 2)) > 0.95:
-        edgeMultiplier = -0.5
+
+    angleBonus = 0.5 * max((10 - steering_angle), 0)
+
     infoBonus = 0
-    infoPoints = waypoints[closest_waypoints[0]: closest_waypoints[0] + 10]
+    # infoPoints = waypoints[closest_waypoints[0]: closest_waypoints[0] + 10]
+    infoPoints = waypoints[closest_waypoints[0]:][0:10]
     print('infoPoints: ', infoPoints)
 
     for idx in range(0, len(infoPoints) - 1):
@@ -105,9 +109,16 @@ def reward_function(params):
             print("headingDiff " + str(headingDiff))
             infoBonus = infoBonus + (multiplier * headingDiff)
 
+    # for idy in position_points[-10:]:
+    #     print('position_points list' + position_points[idy][2])
+    # print('position_points ' + str(position_points[-10:]))
+
+
+    print('angleBonus ' + str(angleBonus))
+    print('progressBonus ' + str(progressBonus))
     print("infoBonus " + str(infoBonus))
     print("bonus " + str(bonus))
     print("speedBonus " + str(speedBonus))
-    reward = edgeMultiplier * (infoBonus + bonus + speedBonus)
+    reward = edgeMultiplier * (infoBonus + bonus + speedBonus + progressBonus + angleBonus)
     print("reward " + str(float(reward)))
     return float(reward)
