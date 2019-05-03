@@ -20,6 +20,7 @@
 import math
 
 position_points = []
+progress_point = 0
 
 def getHeading(x1, y1, x2, y2):
     deltax = (x2 - x1)
@@ -67,7 +68,12 @@ def reward_function(params):
     global position_points
     position_points.append([x, y, distance_from_center, progress])
     print('position_points', position_points)
-    progressBonus = 10 * (progress - position_points[-10:][0][2])
+    global progress_point
+    progressBonus = 0
+    if closest_waypoints[0] > progress_point:
+        progressBonus = 10 * (closest_waypoints[0] - progress_point)
+        progress_point = closest_waypoints[0]
+    # progressBonus = 100 * (progress - position_points[-10:][0][2])
 
     reward = 0
     bonus = 0
@@ -75,13 +81,12 @@ def reward_function(params):
     edgeMultiplier = 1
     if (distance_from_center / (track_width / 2)) > 0.75:
         edgeMultiplier = 0.5
-    elif not all_wheels_on_track:
+    if not all_wheels_on_track:
         edgeMultiplier = 0.1
 
     angleBonus = 0.5 * max((10 - steering_angle), 0)
 
     infoBonus = 0
-    # infoPoints = waypoints[closest_waypoints[0]: closest_waypoints[0] + 10]
     infoPoints = waypoints[closest_waypoints[0]:][0:10]
     print('infoPoints: ', infoPoints)
 
@@ -108,11 +113,6 @@ def reward_function(params):
 
             print("headingDiff " + str(headingDiff))
             infoBonus = infoBonus + (multiplier * headingDiff)
-
-    # for idy in position_points[-10:]:
-    #     print('position_points list' + position_points[idy][2])
-    # print('position_points ' + str(position_points[-10:]))
-
 
     print('angleBonus ' + str(angleBonus))
     print('progressBonus ' + str(progressBonus))
