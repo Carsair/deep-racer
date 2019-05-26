@@ -7,6 +7,6 @@ Angle I was trying is to match the car heading to the course midline heading (an
 
 ## Resources
 
-https://aws.amazon.com/deepracer/
-https://docs.aws.amazon.com/deepracer/latest/developerguide/deepracer-how-it-works.html
-https://docs.aws.amazon.com/deepracer/latest/developerguide/deepracer-console-train-evaluate-models.html#deepracer-reward-function-signature
+- https://aws.amazon.com/deepracer/
+- https://docs.aws.amazon.com/deepracer/latest/developerguide/deepracer-how-it-works.html
+- https://docs.aws.amazon.com/deepracer/latest/developerguide/deepracer-console-train-evaluate-models.html#deepracer-reward-function-signature
