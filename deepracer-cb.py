@@ -86,43 +86,50 @@ def reward_function(params):
 
     angleBonus = 0.5 * max((10 - steering_angle), 0)
 
-    if closest_waypoints[0] > closest_waypoints[1]:
-        headingDiff = getHeading(waypoints[closest_waypoints[0]][0], waypoints[closest_waypoints[0]][1], waypoints[closest_waypoints[1]][0], waypoints[closest_waypoints[1]][1])
-    else:
-        headingDiff = getHeading(waypoints[closest_waypoints[1]][0], waypoints[closest_waypoints[1]][1], waypoints[closest_waypoints[0]][0], waypoints[closest_waypoints[0]][1])
-    headingDiff = abs(headingDiff - heading)
-    if headingDiff > 180:
-        headingDiff = 360 - headingDiff
-    headingBonus = (180 - headingDiff) / 18
-
+    headingBonus = 0
+    # if closest_waypoints[0] > closest_waypoints[1]:
+    #     headingDiff = getHeading(waypoints[closest_waypoints[0]][0], waypoints[closest_waypoints[0]][1], waypoints[closest_waypoints[1]][0], waypoints[closest_waypoints[1]][1])
+    # else:
+    #     headingDiff = getHeading(waypoints[closest_waypoints[1]][0], waypoints[closest_waypoints[1]][1], waypoints[closest_waypoints[0]][0], waypoints[closest_waypoints[0]][1])
+    # headingDiff = abs(headingDiff - heading)
+    # if headingDiff > 180:
+    #     headingDiff = 360 - headingDiff
+    # headingBonus = (180 - headingDiff) / 18
 
     infoBonus = 0
-    # infoPoints = waypoints[closest_waypoints[0]:][0:10]
-    # print('infoPoints: ', infoPoints)
+    infoPoints = waypoints[closest_waypoints[0]:][0:10:2]
+    print('infoPoints: ', infoPoints)
 
-    # for idx in range(0, len(infoPoints) - 1):
-    #     if infoPoints[idx]:
-    #         multiplier = 1 / ((idx + 1)**1.5)
-    #         print("multiplier " + str(multiplier))
+    for idx in range(0, len(infoPoints) - 1):
+        if infoPoints[idx]:
+            multiplier = 1 / ((idx + 1)**1.1)
+            print("multiplier " + str(multiplier))
 
-    #         if infoPoints[idx] and infoPoints[idx + 1]:
-    #             xwaypoint1 = infoPoints[idx][0]
-    #             ywaypoint1 = infoPoints[idx][1]
-    #             xwaypoint2 = infoPoints[idx + 1][0]
-    #             ywaypoint2 = infoPoints[idx + 1][1]
-    #         elif infoPoints[idx] and infoPoints[idx - 1]:
-    #             xwaypoint1 = infoPoints[idx - 1][0]
-    #             ywaypoint1 = infoPoints[idx - 1][1]
-    #             xwaypoint2 = infoPoints[idx][0]
-    #             ywaypoint2 = infoPoints[idx][1]
+            if infoPoints[idx] and infoPoints[idx + 1]:
+                xwaypoint1 = infoPoints[idx][0]
+                ywaypoint1 = infoPoints[idx][1]
+                xwaypoint2 = infoPoints[idx + 1][0]
+                ywaypoint2 = infoPoints[idx + 1][1]
+            elif infoPoints[idx] and infoPoints[idx - 1]:
+                xwaypoint1 = infoPoints[idx - 1][0]
+                ywaypoint1 = infoPoints[idx - 1][1]
+                xwaypoint2 = infoPoints[idx][0]
+                ywaypoint2 = infoPoints[idx][1]
 
-    #         headingDiff = abs(getHeading(xwaypoint1, ywaypoint1, xwaypoint2, ywaypoint2) - heading)
-    #         if headingDiff > 180:
-    #             headingDiff = 360 - headingDiff
-    #         headingDiff = (180 - headingDiff) / 18
+            headingDiff = abs(getHeading(xwaypoint1, ywaypoint1, xwaypoint2, ywaypoint2) - heading)
+            if headingDiff > 90:
+                headingDiff = 0
+            elif headingDiff > 45:
+                headingDiff = 2
+            elif headingDiff > 22:
+                headingDiff = 10
+            elif headingDiff > 10:
+                headingDiff = 15
+            elif headingDiff <= 10:
+                headingDiff = 20
 
-    #         print("headingDiff " + str(headingDiff))
-    #         infoBonus = infoBonus + (multiplier * headingDiff)
+            print("headingDiff " + str(headingDiff))
+            infoBonus = infoBonus + (multiplier * headingDiff)
 
     print('angleBonus ' + str(angleBonus))
     print('progressBonus ' + str(progressBonus))
